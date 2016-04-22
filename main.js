@@ -18,6 +18,12 @@ phina.define('MainScene', {
 phina.define('Block', {
   //短形クラスを継承
   superClass: 'RectangleShape',
+  init: function() {
+    this.superInit({
+      width: BLOCK_WIDTH,
+      height: BLOCK_HEIGHT,
+    });
+  }
 })
 
 // メイン処理

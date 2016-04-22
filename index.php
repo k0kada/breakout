@@ -8,8 +8,8 @@
 
     <title>Breakout</title>
     <!-- phina.js を読み込む -->
-    <script src='http://cdn.rawgit.com/phi-jp/phina.js/v0.1.1/build/phina.js'></script>
-                 
+    <script src='phina.js/build/phina.min.js'></script>
+
     <!-- メイン処理 -->
     <script src='main.js'></script>
   </head>
