@@ -7,11 +7,21 @@ var BLOCK_HEIGHT = 60 / 2;
 
 // MainScene クラスを定義
 phina.define('MainScene', {
-  superClass: 'CanvasScene',
+  superClass: 'DisplayScene',
   init: function() {
+    //親クラス初期化
     this.superInit();
     // 背景色を指定
     this.backgroundColor = 'black';
+
+    //ブロック管理用のグループ
+    this.blockGroup = DisplayElement().addChildTo(this);
+    var self = this;
+    for (var spanX = 2; spanX < 16; spanX += 2) {
+      for (var spanY = 1; spanY < 4; spanY += 0.5) {
+        Block().addChildTo(self.blockGroup).setPosition(self.gridX.span(spanX), self.gridY.span(spanY));
+      }
+    }
   },
 });
 
