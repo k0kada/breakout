@@ -85,27 +85,75 @@ phina.define('MainScene', {
       //画面端での反射
       //上端
       if (ball.top < screen_rect.top) {
-        ball.top = screen_rect.top;
         ball.vy = -ball.vy;
       }
       //左端
       if (ball.left < screen_rect.left) {
-        ball.left = screen_rect.left;
         ball.vx = -ball.vx;
       }
       //右端
       if (ball.right > screen_rect.right) {
-        ball.right = screen_rect.right;
         ball.vx = -ball.vx;
       }
+
       //パドルとの反射
       if (ball.hitTestElement(paddle) && ball.vy > 0) {
-        ball.bottom = paddle.top;
         ball.vy = -ball.vy;
         //パドルに当たった位置で角度を変化させる
         var dx = paddle.x - ball.x;
         ball.vx = -dx / 5;
       }
+
+      //ブロックとの反射
+      this.block_group.children.some(function(block) {
+        if (ball.hitTestElement(block)) {
+          //左上角にヒット
+          if (ball.top < block.top && ball.left < block.left) {
+            ball.vx = -ball.speed;
+            ball.vy = -ball.speed;
+            return;
+          }
+          //右上角
+          if (ball.top < block.top && block.right < ball.right) {
+            ball.vx = ball.speed;
+            ball.vy = -ball.speed;
+            return;
+          }
+          //左下角
+          if (block.bottom < ball.bottom && ball.left < block.left) {
+            ball.vx = -ball.speed;
+            ball.vy = ball.speed;
+            return;
+          }
+          //右下角
+          if (block.bottom < ball.bottom && block.right < ball.right) {
+            ball.vx = ball.speed;
+            ball.vy = ball.speed;
+            return;
+          }
+          //左側面
+          if (block.left < block.left) {
+            ball.vx = -ball.vx;
+            return;
+          }
+          //右側面
+          if (block.right < ball.right) {
+            ball.vx = -ball.vx;
+            return;
+          }
+          //上部
+          if (ball.top < block.top) {
+            ball.vy = -ball.vy;
+            return;
+          }
+          //下部
+          if (block.bottom < ball.bottom) {
+            ball.vy = -ball.vy;
+            return;
+          }
+        }
+      });
+
       //死亡
       if (ball.top > screen_rect.bottom) {
         this.status = 'ready';
