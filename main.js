@@ -46,22 +46,72 @@ phina.define('MainScene', {
         paddle.right = screen_rect.right;
       }
     };
+
+    //画面上でタッチが離れた時
+    this.onpointend = function() {
+      if (self.status === 'ready') {
+        //ボール発射
+        self.ball.vy = -self.ball.speed;
+        self.status = 'move';
+      }
+    };
+
     //ボール作成
     this.ball = Ball().addChildTo(this);
     //スコープを広げる
     this.paddle = paddle;
+    this.screen_rect = screen_rect;
+    this.status = 'ready';
   },
 
   //毎フレーム更新
   update: function() {
     var ball = this.ball;
     var paddle = this.paddle;
+    var screen_rect = this.screen_rect;
 
-    //ボールをパドルの上に置く
-    ball.x = paddle.x;
-    ball.bottom = paddle.top;
+    //ボール待機中
+    if (this.status === 'ready') {
+      //ボール移動量
+      ball.vx = 0;
+      ball.vy = 0;
+      //ボールをパドルの上に置く
+      ball.x = paddle.x;
+      ball.bottom = paddle.top;
+    }
+    //ボール移動中
+    if (this.status === 'move') {
+      ball.moveBy(ball.vx, ball.vy);
+      //画面端での反射
+      //上端
+      if (ball.top < screen_rect.top) {
+        ball.top = screen_rect.top;
+        ball.vy = -ball.vy;
+      }
+      //左端
+      if (ball.left < screen_rect.left) {
+        ball.left = screen_rect.left;
+        ball.vx = -ball.vx;
+      }
+      //右端
+      if (ball.right > screen_rect.right) {
+        ball.right = screen_rect.right;
+        ball.vx = -ball.vx;
+      }
+      //パドルとの反射
+      if (ball.hitTestElement(paddle) && ball.vy > 0) {
+        ball.bottom = paddle.top;
+        ball.vy = -ball.vy;
+        //パドルに当たった位置で角度を変化させる
+        var dx = paddle.x - ball.x;
+        ball.vx = -dx / 5;
+      }
+      //死亡
+      if (ball.top > screen_rect.bottom) {
+        this.status = 'ready';
+      }
+    }
   },
-
 });
 
 //ブロッククラス
@@ -98,6 +148,8 @@ phina.define('Ball', {
       radius: BALL_RADIUS,
       fill: 'silver',
     });
+    //ボールスピード
+    this.speed = 6;
   },
 });
 
@@ -108,6 +160,8 @@ phina.main(function() {
   var app = GameApp({
     startLabel: 'title', // メインシーンから開始する
   });
+  //fps変更
+  app.fps = 60;
 
   document.body.appendChild(app.domElement);
   // アプリケーション実行
