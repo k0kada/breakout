@@ -7,6 +7,7 @@ var BLOCK_HEIGHT = 60 / 2;
 
 var PADDLE_WIDTH = BLOCK_WIDTH * 1.5;
 var PADDLE_HEIGHT = BLOCK_HEIGHT;
+var BALL_RADIUS = BLOCK_WIDTH / 8;
 
 // MainScene クラスを定義
 phina.define('MainScene', {
@@ -23,6 +24,7 @@ phina.define('MainScene', {
     var screen_rect = Rect(0, 0, 640, 960);
 
     var self = this;
+    //ブロック設置
     for (var span_x = 2; span_x < 16; span_x += 2) {
       for (var span_y = 1; span_y < 4; span_y += 0.5) {
         Block().addChildTo(self.block_group).setPosition(self.gridX.span(span_x), self.gridY.span(span_y));
@@ -44,7 +46,22 @@ phina.define('MainScene', {
         paddle.right = screen_rect.right;
       }
     };
+    //ボール作成
+    this.ball = Ball().addChildTo(this);
+    //スコープを広げる
+    this.paddle = paddle;
   },
+
+  //毎フレーム更新
+  update: function() {
+    var ball = this.ball;
+    var paddle = this.paddle;
+
+    //ボールをパドルの上に置く
+    ball.x = paddle.x;
+    ball.bottom = paddle.top;
+  },
+
 });
 
 //ブロッククラス
@@ -71,6 +88,19 @@ phina.define('Paddle', {
       });
     },
 });
+
+//ボールクラス
+phina.define('Ball', {
+  //円のクラスを継承
+  superClass: 'CircleShape',
+  init: function() {
+    this.superInit({
+      radius: BALL_RADIUS,
+      fill: 'silver',
+    });
+  },
+});
+
 
 // メイン処理
 phina.main(function() {
