@@ -111,44 +111,52 @@ phina.define('MainScene', {
           if (ball.top < block.top && ball.left < block.left) {
             ball.vx = -ball.speed;
             ball.vy = -ball.speed;
+            block.remove();
             return;
           }
           //右上角
           if (ball.top < block.top && block.right < ball.right) {
             ball.vx = ball.speed;
             ball.vy = -ball.speed;
+            block.remove();
             return;
           }
           //左下角
           if (block.bottom < ball.bottom && ball.left < block.left) {
             ball.vx = -ball.speed;
             ball.vy = ball.speed;
+            block.remove();
             return;
           }
           //右下角
           if (block.bottom < ball.bottom && block.right < ball.right) {
             ball.vx = ball.speed;
             ball.vy = ball.speed;
+            block.remove();
             return;
           }
           //左側面
           if (block.left < block.left) {
             ball.vx = -ball.vx;
+            block.remove();
             return;
           }
           //右側面
           if (block.right < ball.right) {
             ball.vx = -ball.vx;
+            block.remove();
             return;
           }
           //上部
           if (ball.top < block.top) {
             ball.vy = -ball.vy;
+            block.remove();
             return;
           }
           //下部
           if (block.bottom < ball.bottom) {
             ball.vy = -ball.vy;
+            block.remove();
             return;
           }
         }
