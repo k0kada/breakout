@@ -5,6 +5,9 @@ phina.globalize();
 var BLOCK_WIDTH = 40 * 2;
 var BLOCK_HEIGHT = 60 / 2;
 
+var PADDLE_WIDTH = BLOCK_WIDTH * 1.5;
+var PADDLE_HEIGHT = BLOCK_HEIGHT;
+
 // MainScene クラスを定義
 phina.define('MainScene', {
   superClass: 'DisplayScene',
@@ -15,16 +18,36 @@ phina.define('MainScene', {
     this.backgroundColor = 'black';
 
     //ブロック管理用のグループ
-    this.blockGroup = DisplayElement().addChildTo(this);
+    this.block_group = DisplayElement().addChildTo(this);
+    //位置判定のrect
+    var screen_rect = Rect(0, 0, 640, 960);
+
     var self = this;
-    for (var spanX = 2; spanX < 16; spanX += 2) {
-      for (var spanY = 1; spanY < 4; spanY += 0.5) {
-        Block().addChildTo(self.blockGroup).setPosition(self.gridX.span(spanX), self.gridY.span(spanY));
+    for (var span_x = 2; span_x < 16; span_x += 2) {
+      for (var span_y = 1; span_y < 4; span_y += 0.5) {
+        Block().addChildTo(self.block_group).setPosition(self.gridX.span(span_x), self.gridY.span(span_y));
       }
     }
+
+    //パドルのY軸
+    var paddle_y = this.gridY.span(14.5);
+    //パドル設置
+    var paddle = Paddle().addChildTo(this).setPosition(this.gridX.center(), paddle_y);
+    //タッチ移動
+    this.onpointmove = function(e) {
+      paddle.setPosition(e.pointer.x | 0, paddle_y);
+      //画面はみ出し
+      if (paddle.left < screen_rect.left) {
+        paddle.left = screen_rect.left;
+      }
+      if (paddle.right > screen_rect.right) {
+        paddle.right = screen_rect.right;
+      }
+    };
   },
 });
 
+//ブロッククラス
 phina.define('Block', {
   //短形クラスを継承
   superClass: 'RectangleShape',
@@ -33,8 +56,21 @@ phina.define('Block', {
       width: BLOCK_WIDTH,
       height: BLOCK_HEIGHT,
     });
-  }
-})
+  },
+});
+
+//パドルクラス
+phina.define('Paddle', {
+  //短形クラスを継承
+    superClass: 'RectangleShape',
+    init: function() {
+      this.superInit({
+        width: PADDLE_WIDTH,
+        height: PADDLE_HEIGHT,
+        fill: 'silver',
+      });
+    },
+});
 
 // メイン処理
 phina.main(function() {
